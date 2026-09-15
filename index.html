@@ -264,6 +264,41 @@ textarea:focus{outline:none;border-color:var(--rose)}
 .mark button.sel-shaky{background:var(--rose-pale);border-color:var(--rose);color:var(--text-dark)}
 .dots i.shaky{background:var(--rose);box-shadow:0 0 0 2px var(--rose-pale)}
 .dots i.got{background:var(--good)}
+/* ===== writing and drawing ===== */
+.writebox,.drawbox{margin-top:14px;padding-top:14px;border-top:1px solid var(--cream-dark)}
+.wt{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:1px;
+  color:var(--text-soft);display:block;margin-bottom:8px}
+.writebox textarea{
+  width:100%;min-height:96px;background:var(--cream);color:var(--text-dark);
+  border:1.5px solid var(--cream-dark);border-radius:13px;padding:13px;
+  font-family:inherit;font-size:16px;line-height:1.5;resize:vertical;
+}
+.writebox textarea:focus{outline:none;border-color:var(--rose)}
+.padwrap{
+  background:var(--cream);border:1.5px dashed var(--rose-light);border-radius:13px;
+  height:230px;overflow:hidden;position:relative;
+}
+.pad{width:100%;height:230px;display:block;touch-action:none;cursor:crosshair}
+.padbar{display:flex;gap:8px;margin-top:9px}
+.padbar button{
+  flex:1;border:1.5px solid var(--rose-light);background:var(--white);color:var(--text-mid);
+  font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 4px;border-radius:11px;cursor:pointer;
+}
+.reveal{display:none;margin-top:10px;background:var(--cream);border-radius:13px;padding:12px}
+.reveal.shown{display:block}
+.reveal svg{display:block;width:100%;height:auto}
+.sarow{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
+.sarow .btn{flex:1;min-width:150px}
+.chips{margin-top:10px}
+.chips .ct{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;
+  color:var(--text-soft);display:block;margin-bottom:6px}
+.chip-hit,.chip-miss{
+  display:inline-block;font-size:13px;font-weight:600;padding:5px 10px;
+  border-radius:999px;margin:0 6px 6px 0;
+}
+.chip-hit{background:var(--good-pale);color:var(--good);border:1px solid var(--good)}
+.chip-miss{background:var(--rose-pale);color:var(--rose);border:1px solid var(--rose-light)}
+.checknote{font-size:13px;color:var(--text-soft);margin-top:10px;line-height:1.45}
 /* ===== source badge ===== */
 .cardtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:4px}
 .cardtop .em{margin-bottom:0}
@@ -273,6 +308,7 @@ textarea:focus{outline:none;border-color:var(--rose)}
 }
 .src.lec{background:var(--rose-pale);color:var(--rose)}
 .src.guide{background:var(--cream-dark);color:var(--text-soft)}
+.src.tutor{background:var(--lavender-pale);color:var(--mauve)}
 /* ===== pomodoro ===== */
 .pom-btn{
   position:fixed;left:14px;bottom:14px;z-index:300;height:50px;min-width:50px;padding:0 15px;
@@ -2860,6 +2896,237 @@ const CELL_CARDS = [
     iso.trick += " On his slide, isomers show up under functional groups: structural isomers, ketones and aldehydes. Structural isomers are the part he taught directly.";
   }
 })();
+/* ============================================================
+   TUTORING SECTION — built from the ETC w/ Wren worksheets and
+   the Unit One Practice Exam. This is the closest thing to
+   knowing what the real exam looks like.
+   ============================================================ */
+
+FIG.nuclide = `<svg viewBox="0 0 700 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Reading nuclide notation">
+<text x="350" y="20" class="f-txt" text-anchor="middle" font-size="14" font-weight="700">Reading nuclide notation</text>
+<text x="250" y="96" class="f-txt" text-anchor="middle" font-size="46" font-weight="700">Na</text>
+<text x="196" y="72" class="f-acc f-txt" text-anchor="end" font-size="20" font-weight="700">23</text>
+<text x="196" y="104" class="f-alt f-txt" text-anchor="end" font-size="20" font-weight="700">11</text>
+<text x="292" y="70" class="f-acc f-txt" font-size="22" font-weight="700">+</text>
+<g class="s-dim" stroke-width="1.3">
+<line x1="200" y1="64" x2="150" y2="44"/><line x1="200" y1="110" x2="150" y2="140"/><line x1="298" y1="62" x2="360" y2="44"/>
+</g>
+<g class="f-sm" font-size="12">
+<text x="30" y="40">mass number = protons + neutrons</text>
+<text x="30" y="150">atomic number = protons</text>
+<text x="366" y="40">charge: + means it LOST an electron</text>
+</g>
+<g class="f-none s-acc" stroke-width="1.6"><rect x="400" y="86" width="280" height="118" rx="12"/></g>
+<text x="540" y="110" class="f-acc f-txt" text-anchor="middle" font-size="13" font-weight="700">So for &#178;&#179;Na&#8314; with atomic number 11</text>
+<g class="f-txt" font-size="13">
+<text x="420" y="136">Protons = 11</text>
+<text x="420" y="158">Neutrons = 23 &#8722; 11 = 12</text>
+<text x="420" y="180">Electrons = 11 &#8722; 1 = 10 (it lost one)</text>
+</g>
+<text x="350" y="222" class="f-sm" text-anchor="middle">Neutral atoms have equal protons and electrons. A + charge means electrons were lost, a &#8722; charge means electrons were gained.</text>
+</svg>`;
+
+FIG.threeDiffer = `<svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Isotope versus ion versus different element">
+<text x="350" y="20" class="f-txt" text-anchor="middle" font-size="14" font-weight="700">What changes in each case</text>
+<g class="f-none s-acc" stroke-width="1.6"><rect x="14" y="34" width="216" height="128" rx="12"/><rect x="242" y="34" width="216" height="128" rx="12"/><rect x="470" y="34" width="216" height="128" rx="12"/></g>
+<g class="f-acc f-txt" text-anchor="middle" font-size="14" font-weight="700">
+<text x="122" y="58">ISOTOPE</text><text x="350" y="58">ION</text><text x="578" y="58">DIFFERENT ELEMENT</text></g>
+<g class="f-txt" text-anchor="middle" font-size="15" font-weight="700">
+<text x="122" y="90">NEUTRONS</text><text x="350" y="90">ELECTRONS</text><text x="578" y="90">PROTONS</text></g>
+<g class="f-sm" text-anchor="middle" font-size="11.5">
+<text x="122" y="114">mass changes</text><text x="122" y="132">chemistry stays the same</text><text x="122" y="150">carbon-12 vs carbon-14</text>
+<text x="350" y="114">charge changes</text><text x="350" y="132">still the same element</text><text x="350" y="150">Na vs Na&#8314;</text>
+<text x="578" y="114">identity changes</text><text x="578" y="132">an entirely new element</text><text x="578" y="150">carbon vs nitrogen</text></g>
+<text x="350" y="186" class="f-acc f-txt" text-anchor="middle" font-size="13" font-weight="700">Neutrons, electrons, protons. That is the whole worksheet in three words.</text>
+</svg>`;
+
+FIG.glucoseReg = `<svg viewBox="0 0 700 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Blood glucose regulation">
+<text x="350" y="20" class="f-txt" text-anchor="middle" font-size="14" font-weight="700">Blood glucose regulation: the diagram they ask you to label</text>
+<ellipse cx="350" cy="52" rx="120" ry="20" class="f-pale s-acc" stroke-width="1.8"/>
+<text x="350" y="58" class="f-txt" text-anchor="middle" font-size="12.5" font-weight="700">blood glucose RISES (after a meal)</text>
+<ellipse cx="350" cy="248" rx="120" ry="20" class="f-pale s-alt" stroke-width="1.8"/>
+<text x="350" y="254" class="f-txt" text-anchor="middle" font-size="12.5" font-weight="700">blood glucose FALLS (fasting)</text>
+<ellipse cx="350" cy="150" rx="70" ry="30" class="f-surf s-line" stroke-width="1.8"/>
+<text x="350" y="146" class="f-txt" text-anchor="middle" font-size="12" font-weight="700">PANCREAS</text>
+<text x="350" y="163" class="f-sm" text-anchor="middle" font-size="10.5">senses the change</text>
+<g class="s-acc" stroke-width="2" fill="none" marker-end="url(#arG2)">
+<path d="M240 60 q-90 40 -60 86"/><path d="M186 176 q30 50 150 62"/></g>
+<defs><marker id="arG2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" class="f-acc"/></marker></defs>
+<g class="s-alt" stroke-width="2" fill="none" marker-end="url(#arG3)">
+<path d="M460 240 q90 -40 60 -86"/><path d="M514 124 q-30 -50 -150 -62"/></g>
+<defs><marker id="arG3" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 z" class="f-alt"/></marker></defs>
+<text x="120" y="120" class="f-acc f-txt" text-anchor="middle" font-size="12.5" font-weight="700">INSULIN</text>
+<text x="120" y="140" class="f-sm" text-anchor="middle" font-size="11">liver stores glucose</text>
+<text x="120" y="156" class="f-sm" text-anchor="middle" font-size="11">as GLYCOGEN</text>
+<text x="580" y="120" class="f-alt f-txt" text-anchor="middle" font-size="12.5" font-weight="700">GLUCAGON</text>
+<text x="580" y="140" class="f-sm" text-anchor="middle" font-size="11">liver breaks glycogen</text>
+<text x="580" y="156" class="f-sm" text-anchor="middle" font-size="11">back down to glucose</text>
+<text x="350" y="204" class="f-sm" text-anchor="middle" font-size="11.5">Both loops push blood glucose back toward normal. This is negative feedback, and it is homeostasis in one picture.</text>
+<text x="350" y="222" class="f-sm" text-anchor="middle" font-size="11.5">INsulin puts glucose IN storage. GLUCAGON makes GLUCose come AGAIN.</text>
+</svg>`;
+
+FIG.compStrand = `<svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Writing a complementary DNA strand">
+<text x="350" y="20" class="f-txt" text-anchor="middle" font-size="14" font-weight="700">Writing the complementary strand</text>
+<text x="60" y="66" class="f-txt" font-size="17" font-weight="700" font-family="monospace">5&#8242;- A G G T C C G -3&#8242;</text>
+<text x="60" y="110" class="f-acc f-txt" font-size="17" font-weight="700" font-family="monospace">3&#8242;- T C C A G G C -5&#8242;</text>
+<g class="s-dim" stroke-width="1.4" stroke-dasharray="3 3">
+<line x1="96" y1="76" x2="96" y2="96"/><line x1="128" y1="76" x2="128" y2="96"/><line x1="160" y1="76" x2="160" y2="96"/>
+<line x1="192" y1="76" x2="192" y2="96"/><line x1="224" y1="76" x2="224" y2="96"/><line x1="256" y1="76" x2="256" y2="96"/><line x1="288" y1="76" x2="288" y2="96"/>
+</g>
+<g class="f-none s-acc" stroke-width="1.6"><rect x="380" y="40" width="300" height="86" rx="12"/></g>
+<text x="530" y="62" class="f-acc f-txt" text-anchor="middle" font-size="12.5" font-weight="700">Two steps, in this order</text>
+<g class="f-txt" font-size="12">
+<text x="398" y="84">1. Pair each base: A&#8594;T, T&#8594;A, G&#8594;C, C&#8594;G</text>
+<text x="398" y="108">2. Flip the direction: 5&#8242; becomes 3&#8242;, antiparallel</text>
+</g>
+<text x="350" y="158" class="f-sm" text-anchor="middle">The strands run ANTIPARALLEL, meaning opposite directions. If the given strand reads 5&#8242; to 3&#8242;, its partner reads 3&#8242; to 5&#8242;.</text>
+<text x="350" y="180" class="f-acc f-txt" text-anchor="middle" font-size="12.5" font-weight="700">Losing the direction label is the most common way to lose the point here.</text>
+</svg>`;
+
+const TUTOR_CARDS = [
+{icon:"🧾", src:"tutor", fig:"lifeProps",
+ q:"Name three characteristics that life and viruses SHARE.",
+ plain:"The study guide asks for exactly three. Safe answers: they contain genetic material, they reproduce (viruses need a host, but they do produce more of themselves), and they evolve through natural selection. You can also argue they show order, since a virion is a highly organized structure, and that they respond to their environment by binding specific host cells.",
+ sci:"Shared characteristics: possession of nucleic acid genetic material (DNA or RNA); production of progeny, though viral reproduction is host dependent; evolutionary adaptation through mutation and natural selection; and structural order, since virions are precisely organized assemblies of capsomeres and nucleic acid. Viruses lack cellular organization, independent metabolism, homeostasis, and independent growth and development.",
+ trick:"Genetic material, reproduction, evolution. Three that overlap, and the ones they fail are metabolism, homeostasis, cells, and growth.",
+ aloud:"Say the three shared ones, then immediately say three they fail. Being able to do both is what the question is testing.",
+ deep:{harder:"The trap is 'reproduce.' A virus does produce progeny, but not independently. If you list it, add the qualifier out loud, because a grader looking for precision will want it.",
+   later:"The same framing returns in microbiology."}},
+
+{icon:"📉", src:"tutor",
+ q:"What is entropy, and how does it relate to energy in living systems?",
+ plain:"Entropy is disorder. Energy naturally trends from higher organization to lower organization, meaning ordered energy spreads out and becomes less useful, usually as heat. Living things fight this by constantly taking in energy, which is why life needs a continuous supply.",
+ sci:"Entropy is a measure of disorder or randomness in a system. Energy transformations are never fully efficient, and some energy is always dispersed as heat, increasing the entropy of the surroundings. Living systems maintain their internal order, a state of low entropy, only by continuously consuming energy and releasing heat, so the total entropy of the universe still increases. This is why energy must flow continuously through an ecosystem rather than cycling like matter does.",
+ trick:"Entropy = things fall apart unless you spend energy. Your room does not clean itself, and neither does a cell.",
+ aloud:"Say why energy flows through an ecosystem but matter cycles. Entropy is the reason, and this is a term on his vocabulary list.",
+ deep:{harder:"This links directly to his 'energy and matter transformation' theme. Matter cycles because atoms are conserved and reused. Energy flows one way because at every transfer some is lost as heat and cannot be reused. Say both halves of that sentence and you have answered several exam questions at once.",
+   later:"Thermodynamics is the foundation of metabolism."}},
+
+{icon:"⚖️", src:"tutor", fig:"variables",
+ q:"Null hypothesis vs alternate hypothesis.",
+ plain:"The null hypothesis says there is NO effect, no difference, nothing going on. The alternate hypothesis says there IS an effect. You design the experiment to try to reject the null. For the sunflower worksheet: null is that soil pH has no effect on sunflower height, alternate is that soil pH does affect sunflower height.",
+ sci:"The null hypothesis states that no relationship or difference exists between the variables under study. The alternate hypothesis states that a relationship or difference does exist. Experiments are structured to test whether the data justify rejecting the null hypothesis. Rejecting the null provides support for the alternate; failure to reject the null does not prove the null true, only that the evidence was insufficient.",
+ trick:"NULL means NOTHING is happening. Alternate is the alternative to nothing. You never prove the null, you only fail to reject it.",
+ aloud:"Write both hypotheses for the sunflower experiment, then say the prediction in if-then form: if soil pH affects growth, then plants in the optimal pH will grow taller than plants outside it.",
+ deep:{harder:"Why set up a null at all, instead of just testing your idea? Because it forces a falsifiable target. You cannot prove a positive claim outright, but you can show that a no-effect result is unlikely given your data. The whole structure of statistics rests on this.",
+   later:"Every statistics course opens here, and every paper you read reports it."}},
+
+{icon:"🧪", src:"tutor", fig:"variables",
+ q:"What are the components of experimental design?",
+ plain:"A testable hypothesis with a prediction, one independent variable you change, one dependent variable you measure, controlled variables held constant, a control group with no treatment, enough subjects, repetition, and a plan for analyzing the data.",
+ sci:"Components of experimental design: a testable and falsifiable hypothesis with a stated prediction; a single manipulated independent variable; a measurable dependent variable; controlled variables held constant across all groups; a control group receiving no treatment to establish a baseline; adequate sample size with random assignment; replication of the experiment; and a predetermined method of data analysis.",
+ trick:"Hypothesis, Independent, Dependent, Controlled, Control group, Sample size, Replication, Analysis. He asks this as a straight list question, so have the list ready.",
+ aloud:"List all of them, then apply them to the sunflower experiment out loud: independent is soil pH, dependent is plant height in cm, controlled are sunlight, water, soil type, pot size and seed variety, and the control is the group at neutral pH.",
+ deep:{harder:"The worksheet asks for 'a control sample' specifically. Careful: a controlled variable is a condition you keep identical everywhere; a control group or sample is the group that gets no experimental treatment. Both words appear on the sheet and they are not the same thing.",
+   later:"This is the structure of every clinical trial."}},
+
+{icon:"📐", src:"tutor", fig:"htl",
+ q:"Turning data into a law, then into a theory.",
+ plain:"A law describes the pattern: sunflowers grow tallest at a soil pH around 6.6 to 6.8, and growth drops off above and below that. That is just what happens, no explanation. A theory explains why: soil pH affects the enzymes the plant needs to grow, so growth is best where those enzymes work best. And no, neither is permanent. Both can be revised with new evidence.",
+ sci:"A scientific law is a descriptive generalization stating what consistently occurs under specified conditions, derived from repeated observation. From the data set, a law would state that sunflower growth peaks near pH 6.6 to 6.8 and declines on either side. A scientific theory is a broad, well-supported explanation of why the pattern occurs, here that soil pH alters the activity of enzymes required for growth. A law does not require a theory to exist, and a theory does not become a law. Both remain open to revision with new evidence.",
+ trick:"Law = WHAT happens. Theory = WHY it happens. Neither becomes the other, and neither is set in stone.",
+ aloud:"Answer the worksheet's question 5 directly: how are your theory and law different, and do you need one to form the other? They describe versus explain, and no, you do not need one to make the other.",
+ deep:{harder:"Look at the data table: pH 6.6 gives 53.3 cm and pH 6.8 also gives 53.3 cm, while 6.0 gives 25.4 and 7.2 gives 22.9. That is a peak with a falloff on both sides, not a straight line. Describing the shape correctly, rather than saying 'higher pH means more growth,' is what makes it a good law.",
+   later:"Enzyme optimum curves look exactly like this, and they come back in every biochemistry chapter."}},
+
+{icon:"🔢", src:"tutor", fig:"nuclide",
+ q:"How do you read nuclide notation and draw the atom?",
+ plain:"The top number is mass, the bottom number is atomic number, meaning protons. The charge tells you about electrons. For sodium-23 with atomic number 11 and a plus charge: 11 protons, 12 neutrons because 23 minus 11, and 10 electrons because it lost one.",
+ sci:"In nuclide notation the superscript is the mass number, the subscript is the atomic number equal to the proton count, and any charge is written to the upper right. Neutrons equal mass number minus atomic number. Electron count equals proton count in a neutral atom, decreased by the magnitude of a positive charge, or increased by the magnitude of a negative charge. For sodium-23 with a plus one charge: 11 protons, 12 neutrons, 10 electrons.",
+ trick:"Top minus bottom equals neutrons. Plus charge means electrons were lost, so subtract. It reads backwards from how it feels.",
+ aloud:"Work the worksheet problem out loud: give protons, neutrons and electrons for sodium-23 plus, then describe the Bohr diagram you would draw, 2 in the first shell and 8 in the second.",
+ deep:{harder:"Sodium with a plus charge has 10 electrons, the same as neon. That is exactly why it forms: losing one electron gives it a full outer shell. The ion is stable because it now matches a noble gas configuration.",
+   later:"Ion formation and electron configuration in Chem 1A."}},
+
+{icon:"🔀", src:"tutor", fig:"threeDiffer",
+ q:"Isotope, ion, different element: what varies in each?",
+ plain:"An isotope has a varying number of neutrons. An ion has a varying number of electrons. Different elements have a varying number of protons. Three words, three particles.",
+ sci:"Isotopes of an element differ in neutron number, therefore in mass number, while retaining identical chemical behavior. Ions differ in electron number relative to the neutral atom, producing a net charge while remaining the same element. Different elements differ in proton number, which is the atomic number and defines elemental identity.",
+ trick:"Neutrons for isotopes, electrons for ions, protons for elements. The worksheet asks all three side by side, so learn them as a set.",
+ aloud:"Say all three in one breath. This is a three-part worksheet question and almost certainly a set of exam questions.",
+ deep:{harder:"Notice what each change does and does not affect. Change neutrons and you change mass but not chemistry. Change electrons and you change charge and reactivity but not identity. Change protons and you have a different substance entirely. Protons are the only one that changes what the thing IS.",
+   later:"This distinction never stops mattering."}},
+
+{icon:"🧷", src:"tutor", fig:"funcGroups",
+ q:"Functional groups by their properties, the way the worksheet asks.",
+ plain:"The back-pocket guide asks these as fill-in-the-blank. Hydroxyl creates polarity and hydrogen bonds. Carbonyl oxygen is double-bonded, and it makes ketones in the middle of a chain and aldehydes at the end. Carboxyl is in organic acids, donates H+, and gains a negative charge. Amino makes organic bases that accept H+. Sulfhydryl makes covalent crosslinks in proteins. Phosphate has four oxygens and a negative charge, and it makes the phospholipid head polar.",
+ sci:"Hydroxyl (-OH): polar, forms hydrogen bonds, increases solubility. Carbonyl (C=O): the oxygen is double bonded; internal placement gives a ketone, terminal placement gives an aldehyde; ketones and aldehydes containing the same atoms are structural isomers. Carboxyl (-COOH): found in organic acids, donates hydrogen ions, acquires a negative charge, and can participate in ionic bonds. Amino (-NH2): basic, accepts hydrogen ions, acquires a positive charge, participates in ionic bonds. Sulfhydryl (-SH): forms covalent crosslinks, specifically disulfide bridges, in proteins; slightly polar. Phosphate: carries four oxygens and a negative charge, makes the phospholipid head polar, and is central to energy transfer. Methyl (-CH3): nonpolar and unreactive.",
+ trick:"Polar groups: hydroxyl and carbonyl. Ionic groups: carboxyl, amino, and phosphate. That grouping is literally a fill-in-the-blank on the sheet.",
+ aloud:"Go down the blanks out loud: which groups are polar, which are ionic, how many oxygens on a phosphate and what charge, and which group makes covalent crosslinks.",
+ deep:{harder:"Notice the sheet asks about carbonyl twice, once for ketones in the middle of the chain and once for aldehydes at the end. Same functional group, two names depending on position, and molecules with each are structural isomers of one another.",
+   field:"Drug behavior in the body is largely predicted from functional groups: solubility, charge at blood pH, and which enzymes can act on it.",
+   later:"Organic chemistry is organized entirely around these."}},
+
+{icon:"🧬", src:"tutor", fig:"compStrand",
+ q:"How do you write a complementary DNA strand?",
+ plain:"Two steps. Pair each base, A with T and G with C. Then flip the direction label, because the strands run antiparallel. So 5'-AGGTCCG-3' becomes 3'-TCCAGGC-5'.",
+ sci:"To construct a complementary strand, apply complementary base pairing to each nucleotide (A with T, T with A, G with C, C with G) and reverse the directionality, since the strands of DNA are antiparallel. Given 5'-AGGTCCG-3', the complement is 3'-TCCAGGC-5'. If the answer is written in the conventional 5' to 3' direction, it reads 5'-CGGACCT-3'.",
+ trick:"Pair it, then flip the ends. Forgetting the 5' and 3' labels is the single most common way to lose the point here.",
+ aloud:"Do the longer one from the nucleotide worksheet out loud: ACGTTTCCAGGACGCGCAATGG. Complement is TGCAAAGGTCCTGCGCGTTACC, and say the direction labels as you go.",
+ deep:{harder:"Antiparallel is not decoration. DNA polymerase can only build in one direction, which is why replication produces one continuous strand and one made in fragments. The direction labels on your answer are the same fact that makes replication complicated.",
+   field:"Every sequencing result and every PCR primer is written with direction labels for this exact reason.",
+   later:"Replication, transcription and PCR in genetics."}},
+
+{icon:"➡️", src:"tutor", fig:"dnaRna",
+ q:"What is the flow of genetic information in a eukaryotic cell?",
+ plain:"DNA to RNA to protein. DNA is transcribed into mRNA in the nucleus, the mRNA leaves through a nuclear pore, and ribosomes translate it into a chain of amino acids that folds into a protein.",
+ sci:"The flow of genetic information proceeds DNA to RNA to protein. Transcription occurs in the nucleus, producing messenger RNA from a DNA template. The mRNA exits through a nuclear pore to the cytoplasm. Translation occurs at ribosomes, where the mRNA sequence directs assembly of a polypeptide, which then folds into a functional protein. Thymine is found only in DNA; uracil is found only in RNA.",
+ trick:"DNA makes RNA makes protein. Transcription then translation. And for the base question: T is DNA only, U is RNA only.",
+ aloud:"Say the flow with the process names attached, then answer the study guide question: which base is only in DNA and which is only in RNA.",
+ deep:{harder:"His Chapter 1 slide showed this with a lens cell: the crystallin gene is transcribed, translated, and folded into crystallin protein, which makes the lens transparent. That is information flow and structure-function in one example, two of his six themes.",
+   later:"This is the central dogma, and it is the spine of genetics."}},
+
+{icon:"🧶", src:"tutor", fig:"protein",
+ q:"Polypeptide vs protein, and which level survives hydrogen bond disruption?",
+ plain:"A polypeptide is the unfolded chain of amino acids. A protein is that chain folded into its working shape. And if hydrogen bonds get disrupted, primary structure is the level least affected, because primary structure is held by peptide bonds, which are covalent and much stronger.",
+ sci:"A polypeptide is an unfolded linear chain of amino acids joined by peptide bonds. A protein is one or more polypeptides folded into a specific functional conformation. Primary structure is maintained by covalent peptide bonds and is therefore least affected by disruption of hydrogen bonds. Secondary structure depends directly on backbone hydrogen bonding and is most vulnerable; tertiary and quaternary structures are also stabilized in part by hydrogen bonds among other interactions.",
+ trick:"Polypeptide is the chain, protein is the chain folded. And for the hydrogen bond question: primary survives, because peptide bonds are covalent, not hydrogen bonds.",
+ aloud:"Say the difference between a polypeptide and a protein in one sentence, then say which structural level hydrogen bond disruption barely touches and why.",
+ deep:{harder:"This is also the definition of denaturation: hydrogen bonds and other weak interactions break, so secondary, tertiary and quaternary structure unravel, but peptide bonds hold, so the sequence survives. That is why the correct answer to 'what does denaturation entail' is the unfolding of a protein, not the breaking of peptide bonds.",
+   field:"Formalin fixation deliberately crosslinks proteins to lock structure before tissue degrades.",
+   later:"Protein folding is a full biochemistry unit."}},
+
+{icon:"🍞", src:"tutor", fig:"alphaBeta",
+ q:"Amylase can only break alpha glucose linkages. What can it digest?",
+ plain:"Glycogen, starch, and amylopectin, because all three are built from alpha glucose. It cannot touch cellulose or chitin, because those use beta linkages. This is the alpha versus beta rule turned into an applied question.",
+ sci:"Amylase hydrolyzes alpha glycosidic linkages. Starch, including its branched component amylopectin, and glycogen are alpha-linked glucose polymers and are therefore substrates for amylase. Cellulose and chitin are beta-linked and cannot be hydrolyzed by amylase, which is why they pass through the human digestive tract undigested.",
+ trick:"Alpha is what we can digest. Beta is fiber. Amylopectin is just the branched part of starch, so it is alpha too.",
+ aloud:"Say which polysaccharides amylase can break and which it cannot, and give the reason in terms of alpha versus beta linkages.",
+ deep:{harder:"Notice how the question is built. It gives you a rule, alpha only, and asks you to apply it to a list. That is the format to expect: not 'define amylase' but 'here is a rule, now use it.' Learn the alpha and beta assignment for every polysaccharide and any version of this question is answerable.",
+   field:"Salivary amylase is why bread starts tasting sweet if you chew it long enough.",
+   later:"Enzyme specificity in biochemistry."}},
+
+{icon:"🍬", src:"tutor", fig:"glucoseReg",
+ q:"Label the blood glucose regulation diagram.",
+ plain:"Blood glucose rises after a meal. The pancreas releases insulin. The liver takes glucose out of the blood and stores it as glycogen, so glucose comes down. When blood glucose falls, the pancreas releases glucagon, the liver breaks glycogen back into glucose, and glucose goes up. Two opposite loops, both pushing back toward normal.",
+ sci:"Blood glucose regulation is a negative feedback system. Elevated blood glucose stimulates pancreatic beta cells to secrete insulin, which promotes glucose uptake by cells and hepatic conversion of glucose to glycogen, lowering blood glucose. Depressed blood glucose stimulates pancreatic alpha cells to secrete glucagon, which promotes hepatic glycogenolysis, releasing glucose into the blood and raising blood glucose. The liver is the storage site and the pancreas is the sensor and signal source.",
+ trick:"INsulin puts glucose IN storage. GLUCAGON makes GLUCose come AGAIN. Pancreas senses, liver stores.",
+ aloud:"Trace both directions out loud, naming the organ, the hormone, and what happens to glycogen in each. This diagram appears twice across the study guides, which is a strong hint.",
+ deep:{harder:"This is homeostasis, negative feedback, and glycogen all in one diagram, so it can be asked from several angles. Type 1 diabetes is failure to produce insulin; type 2 is cells no longer responding to it. Either way blood glucose stays high because the storage signal is not working.",
+   field:"Blood glucose and HbA1c are among the most ordered lab tests in medicine.",
+   later:"Endocrinology in A&P is built on paired opposing hormones like these."}},
+
+{icon:"🧫", src:"tutor", fig:"proVsEu",
+ q:"Prokaryote vs eukaryote: the Venn diagram and the tricky ones.",
+ plain:"Shared middle: protoplasm, DNA/RNA, cell membrane, ribosomes, living. Prokaryote only: simple. Eukaryote only: nucleus, organelles, complex. Two extras the worksheet tests: prokaryotes are simpler, they DO need to be small, their shapes are bacilli, cocci and spirilla, and their DNA lacks histones.",
+ sci:"Shared features: plasma membrane, protoplasm, genetic material as DNA and RNA, ribosomes, and living status. Prokaryote-specific: structural simplicity, absence of a nucleus and of membrane-bound organelles, small size necessitated by reliance on diffusion. Eukaryote-specific: true nucleus, membrane-bound organelles, greater complexity and size. Prokaryotic DNA is not packaged with histone proteins, which is one structural difference from eukaryotic chromatin. Common prokaryotic morphologies are bacilli, cocci, and spirilla.",
+ trick:"Middle of the Venn: membrane, protoplasm, DNA/RNA, ribosomes, living. And the worksheet's sneaky one: prokaryotic DNA lacks HISTONES, not guanine or RNA.",
+ aloud:"Fill the Venn out loud, then answer the four worksheet questions: simpler, false they do need to be small, bacilli cocci and spirilla, and histones.",
+ deep:{harder:"Why do prokaryotes need to be small? Surface area to volume ratio. A cell relies on diffusion to move materials, and as a cell grows, volume outpaces surface area, so diffusion can no longer supply the interior. Eukaryotes get around it with internal membranes, which is exactly why compartmentalization matters.",
+   later:"Surface area to volume returns in cell biology and in physiology."}},
+
+{icon:"📋", src:"tutor", fig:"macroFour",
+ q:"Fill the macromolecule table: monomer, polymer, function.",
+ plain:"Carbohydrates: monomer monosaccharide, polymer polysaccharide, function energy and structure. Lipids: no true monomer, built from glycerol and fatty acids, function energy storage, membranes, hormones. Proteins: monomer amino acid, polymer polypeptide, function enzymes, structure, transport, defense. Nucleic acids: monomer nucleotide, polymer DNA and RNA, function storing and expressing genetic information.",
+ sci:"Carbohydrates: monosaccharide monomer, polysaccharide polymer, functions in fuel and structural support. Lipids: not true polymers, assembled from glycerol and fatty acid components, functions in long-term energy storage, membrane structure, and hormone signaling. Proteins: amino acid monomer, polypeptide polymer, functions include catalysis, structure, transport, movement, defense and signaling. Nucleic acids: nucleotide monomer, DNA and RNA polymers, functions to store, transmit, regulate and express hereditary information controlling cellular activities.",
+ trick:"Four rows, and the lipid row is the one that breaks the pattern because it has no true monomer. Note that too, since the table will tempt you to invent one.",
+ aloud:"Say all four rows across: class, monomer, polymer, function. The macromolecules study guide asks for the specific monomer of cellulose (beta glucose) and of protein (amino acid), so give the specific answer, not the general one.",
+ deep:{harder:"Notice the study guide says 'the SPECIFIC monomer for cellulose.' The general answer is monosaccharide; the specific answer is beta glucose. Same for its function: the general answer is structure, the specific one is the plant cell wall. When a question says specific, it is telling you the general answer will not earn full credit.",
+   later:"Biochemistry devotes a unit to each row."}}
+];
+
+DECKS.push({id:"tutor", name:"Tutoring & Practice Exam", chapter:"ETC w/ Wren", cards:TUTOR_CARDS});
+DECKS.find(d => d.id === "tutor").cards.forEach(c => { c.src = "tutor"; });
 /* ---------- quiz bank ----------
    type "mc" = multiple choice, type "sa" = short answer with a model answer she self-marks.
    Short answers are written the way the professor would want them said out loud. */
@@ -3370,6 +3637,792 @@ SLIDE_Q.forEach(row => {
   const q = QUIZ.find(x => x.q.indexOf("NASA defines life as") !== -1);
   if(q){ q.cardDeck = "virus"; q.cardSub = "NASA's definition of life"; }
 })();
+/* ============================================================
+   Rebalanced answer choices. Previously the correct option was
+   almost always the longest and most detailed, which let you
+   guess without knowing anything. Every distractor below is now
+   comparable in length and specificity.
+   ============================================================ */
+const REBALANCE = [
+["Which statement about a scientific theory is correct",
+ ["It is an educated guess that has not yet been tested by experiment",
+  "It is promoted to the status of a law once enough evidence accumulates",
+  "It is a broad explanation supported by many independent lines of evidence",
+  "It is a fixed conclusion that cannot be revised by later evidence"],2],
+
+["The control group in an experiment exists in order to",
+ ["Increase the total sample size so the results are more reliable",
+  "Provide an untreated baseline that the treated groups are compared against",
+  "Hold every other condition constant across all of the treatment groups",
+  "Confirm that the researcher's original hypothesis was correct"],1],
+
+["strongest argument that a virus is NOT alive",
+ ["It is far smaller than any known cell, only 20 to 500 nanometers",
+  "It cannot reproduce or metabolize without hijacking a host cell's machinery",
+  "It causes disease in the organism that it happens to infect",
+  "It may carry RNA as its genome rather than double-stranded DNA"],1],
+
+["Which statement about natural selection is accurate",
+ ["Individual organisms evolve during their lifetime to meet a new need",
+  "Populations change over generations as helpful heritable traits become common",
+  "Organisms develop new traits on demand because the environment requires them",
+  "Selection generates brand new variation that was not present beforehand"],1],
+
+["Why is the cell considered the fundamental unit of life",
+ ["It is the smallest biological structure that is visible under a light microscope",
+  "It is the smallest unit that independently shows all characteristics of life",
+  "It is the only structure in the body that contains genetic material",
+  "It is present in every known organism, viruses included"],1],
+
+["An ionic bond forms when",
+ ["Two atoms share one or more pairs of electrons more or less equally",
+  "Two atoms share electrons unequally, producing partial charges on each",
+  "One atom transfers electrons to another and the opposite charges attract",
+  "A hydrogen already bonded to oxygen is weakly attracted to a nearby atom"],2],
+
+["Water is a polar molecule because",
+ ["It contains hydrogen atoms, and hydrogen is always a polar element",
+  "Oxygen pulls the shared electrons harder and the molecule is bent",
+  "It dissolves salts and other charged substances very effectively",
+  "It forms hydrogen bonds with the water molecules around it"],1],
+
+["Carbon forms the backbone of organic molecules because it",
+ ["Is the single most abundant element by mass in the Earth's crust",
+  "Has four valence electrons and forms four stable covalent bonds",
+  "Is the heaviest of the four major elements found in living things",
+  "Gives up its outer electrons easily and forms strong ionic bonds"],1],
+
+["Hydrogen bonds are essential in biology despite being weak because",
+ ["Individually they are in fact stronger than a covalent bond is",
+  "Large numbers together stabilize structures, and their weakness lets DNA unzip",
+  "They are permanent and never break once they have formed in a molecule",
+  "They transfer electrons completely from one atom over to another"],1],
+
+["Two monomers join and a water molecule is released",
+ ["Hydrolysis, where water is added in order to split a bond",
+  "Dehydration synthesis, where water is removed to form a bond",
+  "Denaturation, where a folded molecule loses its shape",
+  "Dissociation, where an ionic compound separates into ions"],1],
+
+["Humans cannot digest cellulose because",
+ ["The molecule is simply too large to fit into any human enzyme",
+  "We lack the enzyme needed to break its beta glycosidic bonds",
+  "It is built from a sugar other than glucose that we cannot use",
+  "It is classified as a lipid and passes through undigested"],1],
+
+["Glycogen is more heavily branched than starch because",
+ ["Animals need rapid glucose release and branches give enzymes more ends",
+  "Plants lack the enzymes required to form branch points at all",
+  "Glycogen is built from beta glucose, which forces branching",
+  "The branches make the molecule waterproof inside the cell"],0],
+
+["Butter is solid at room temperature because its fatty acids",
+ ["Contain many double bonds that put permanent kinks in the chains",
+  "Contain no double bonds, so the chains stay straight and pack tightly",
+  "Carry charged groups that make them interact strongly with water",
+  "Are considerably shorter than the fatty acid chains found in oils"],1],
+
+["Phospholipids form a bilayer in water because they are",
+ ["Entirely hydrophobic, so the whole molecule avoids contact with water",
+  "Entirely hydrophilic, so the whole molecule is drawn toward water",
+  "Amphipathic, with a hydrophilic head and two hydrophobic tails",
+  "Positively charged, so they are attracted to negative ions in solution"],2],
+
+["Which is true of RNA but not DNA",
+ ["It contains phosphate groups linking the sugars of its backbone",
+  "It contains uracil and ribose and is usually single stranded",
+  "It is arranged as two antiparallel strands in a double helix",
+  "It contains adenine as one of its four nitrogenous bases"],1],
+
+["Which structure do ALL viruses have",
+ ["An envelope of lipid membrane taken from the host cell",
+  "Glycoprotein spikes projecting outward from the surface",
+  "A capsid of protein surrounding a nucleic acid genome",
+  "Ribosomes for translating their own genome into protein"],2],
+
+["A viral envelope is made of",
+ ["Protein subunits called capsomeres made by the virus itself",
+  "Lipid membrane taken from the host cell as the virus exits",
+  "Carbohydrate chains assembled on the surface of the capsid",
+  "Nucleic acid wrapped protectively around the outer surface"],1],
+
+["Viruses infect only specific host cells because",
+ ["They can only survive within a narrow range of temperatures",
+  "Their attachment proteins must physically match a host receptor",
+  "They are able to infect only cells already weakened by illness",
+  "They are physically too large to enter most types of cell"],1],
+
+["Which step of viral replication is impossible without a host cell",
+ ["Attachment of the spike proteins to a surface receptor",
+  "Replication of the genome and synthesis of viral proteins",
+  "Existing as an intact particle outside of any living cell",
+  "Being detected and identified under an electron microscope"],1],
+
+["RNA viruses mutate rapidly primarily because",
+ ["They replicate far more slowly than DNA viruses do",
+  "Their polymerase has no proofreading, so errors are kept",
+  "Their genomes are much larger, leaving more room for error",
+  "Their envelopes are unstable and change shape frequently"],1],
+
+["clearest sign a graph is being used to mislead",
+ ["It carries a descriptive title above the plotted data",
+  "The y-axis begins partway up instead of starting at zero",
+  "It includes error bars showing variation within each group",
+  "It labels both axes together with the units of measurement"],1],
+
+["Why must a buffer be made from a weak acid rather than a strong one",
+ ["Weak acids are safer to handle and store in a laboratory",
+  "A weak acid only partly dissociates, so it can take H+ back",
+  "Strong acids are considerably more expensive to purchase",
+  "Weak acids maintain a higher starting pH than strong ones"],1],
+
+["Vinegar and hydrochloric acid at the same concentration differ because",
+ ["Vinegar contains no hydrogen ions at all when it is dissolved",
+  "Acetic acid is weak and only partly dissociates, releasing fewer H+",
+  "Vinegar acts as a base and accepts hydrogen ions from solution",
+  "Hydrochloric acid is always sold at a much lower concentration"],1],
+
+["Cis and trans isomers are different molecules because",
+ ["They are built from entirely different atoms and elements",
+  "A carbon-carbon double bond cannot rotate, locking each form",
+  "They have different molecular formulas despite similar names",
+  "One carries a net electrical charge while the other does not"],1],
+
+["Chitin differs from cellulose mainly because chitin",
+ ["Is built with alpha linkages that let the chain coil up",
+  "Contains a nitrogen-bearing group added onto the glucose",
+  "Functions as a storage polysaccharide rather than structure",
+  "Is assembled from fructose rather than from glucose units"],1],
+
+["best description of what biology studies",
+ ["Only animals and plants, the organisms visible to the eye",
+  "Life at every level, from molecules in cells to ecosystems",
+  "Only organisms small enough to require a microscope to see",
+  "The chemistry of substances as studied in a laboratory"],1],
+
+["A supplement study reports 8 of 10 people",
+ ["The sample of ten people is slightly smaller than ideal",
+  "There is no control group, no blinding, and self-reported results",
+  "A bar graph would have displayed the findings more clearly",
+  "One week is far too long a period to measure energy levels"],1],
+
+["Researchers studying how bacteria defend against viruses",
+ ["Applied science produces more valuable results than basic science",
+  "Basic research can produce applications nobody could have predicted",
+  "Research into bacterial defenses is a poor use of public money",
+  "Gene editing had been the goal of that research from the start"],1],
+
+["Fire grows, consumes fuel, produces waste and spreads",
+ ["It moves and spreads much faster than any living organism does",
+  "It is not cellular, has no genetic material, and no homeostasis",
+  "It produces heat rather than storing energy for later use",
+  "It occurs only where humans have deliberately started it"],1],
+
+["A cell packed with mitochondria and a heavily folded membrane",
+ ["Performs very little work and has low energy requirements",
+  "Performs energy-expensive transport, like a kidney tubule cell",
+  "Has died recently, since damaged cells accumulate mitochondria",
+  "Functions mainly to store fat for the organism's later use"],1],
+
+["Why do carbon, hydrogen, oxygen and nitrogen make up about 96%",
+ ["They are the four most abundant elements in the Earth's crust",
+  "They are small and form strong, stable, often multiple bonds",
+  "They are the four lightest elements on the periodic table",
+  "They are all metals, which makes them highly reactive"],1],
+
+["Which statement about atomic structure is correct",
+ ["Protons carry a negative charge and electrons a positive one",
+  "Nearly all mass sits in the nucleus, nearly all volume in shells",
+  "Neutrons carry a positive charge equal to that of a proton",
+  "Electrons are packed inside the nucleus alongside the protons"],1],
+
+["Why is carbon's atomic mass listed as 12.011",
+ ["It is a rounding artifact left over from older measurements",
+  "It is a weighted average across naturally occurring isotopes",
+  "Electrons contribute a small fractional amount to the mass",
+  "Carbon nuclei contain one partial proton in addition to six"],1],
+
+["Carbon dioxide has two polar bonds but is a nonpolar molecule",
+ ["Its carbon-oxygen bonds are actually nonpolar to begin with",
+  "It is linear, so the two bond dipoles point opposite and cancel",
+  "Carbon has such low electronegativity that no dipole forms",
+  "It contains no oxygen atoms in the arrangement being described"],1],
+
+["Oil separates from water because",
+ ["Oil molecules are considerably heavier than water molecules",
+  "Oil is nonpolar, so water molecules exclude it and it clumps",
+  "Oil carries a positive charge that repels the water molecules",
+  "Oil evaporates much faster than the surrounding water does"],1],
+
+["A buffer resists pH change because it",
+ ["Permanently neutralizes every acid that is added to it",
+  "Contains a weak acid and its conjugate base, so H+ moves both ways",
+  "Removes all hydrogen ions from the solution entirely",
+  "Forces the solution back to exactly pH 7 every time"],1],
+
+["Fat stores about 9 calories per gram while carbohydrate stores about 4",
+ ["Fat molecules are physically larger than carbohydrate molecules",
+  "Hydrocarbon chains are fully reduced, so oxidation releases more",
+  "Carbohydrates cannot be fully digested and absorbed by the body",
+  "Fat contains a greater proportion of oxygen atoms per gram"],1],
+
+["Why does the body convert fructose and galactose into glucose",
+ ["The other sugars are mildly toxic if they circulate in blood",
+  "Glycolysis, the central energy pathway, takes glucose as input",
+  "The other sugars taste too sweet to be used as cellular fuel",
+  "The other sugars are not soluble enough to travel in blood"],1],
+
+["Lactose intolerance happens because a person lacks",
+ ["Lactose, the disaccharide found in milk and dairy products",
+  "Lactase, the enzyme that hydrolyzes the bond within lactose",
+  "Glucose, one of the two monosaccharides that make up lactose",
+  "Stomach acid, which is required to break down milk sugars"],1],
+
+["What do all lipids have in common",
+ ["They are all assembled from the same repeating monomer unit",
+  "They are hydrophobic and do not dissolve readily in water",
+  "They all contain a glycerol backbone with fatty acids attached",
+  "They all serve primarily as long-term energy storage molecules"],1],
+
+["Steroid hormones can enter a cell directly because they are",
+ ["Extremely small, far smaller than any other signaling molecule",
+  "Nonpolar, so they pass through the hydrophobic membrane interior",
+  "Positively charged, so the negative membrane attracts them in",
+  "Built from protein, which the membrane transports automatically"],1],
+
+["Which of these is NOT a typical protein function",
+ ["Catalyzing chemical reactions in the role of an enzyme",
+  "Providing structural support, as collagen does in tissue",
+  "Storing genetic information across generations long term",
+  "Transporting oxygen through the blood, as hemoglobin does"],2],
+
+["What makes one amino acid different from another",
+ ["The amino group attached to the central alpha carbon",
+  "The carboxyl group attached to the central alpha carbon",
+  "The R group, the variable side chain on that same carbon",
+  "The central alpha carbon itself, which differs in each one"],2],
+
+["A nucleotide is made of",
+ ["A phosphate group, a five-carbon sugar, and a nitrogenous base",
+  "Two five-carbon sugars joined to a single nitrogenous base",
+  "An amino group and a carboxyl group on a central carbon",
+  "A glycerol backbone with two fatty acid chains attached"],0],
+
+["Which list matches the properties of life as presented in lecture",
+ ["Order, regulation, growth, energy processing, response, reproduction, evolution",
+  "Motion, size, color, weight, shape, sound, and age of the object",
+  "Cells, tissues, organs, organ systems, organisms, and populations",
+  "Observation, question, hypothesis, experiment, analysis, conclusion"],0],
+
+["NASA defines life as",
+ ["Any system that is constructed from one or more living cells",
+  "A self-sustained chemical system capable of Darwinian evolution",
+  "Any object capable of moving itself without an outside force",
+  "Any chemical system that contains and replicates its own DNA"],1],
+
+["Host range is determined by",
+ ["The overall physical size of the virus particle itself",
+  "Lock and key fit between viral surface and host receptor proteins",
+  "Whether the viral genome is made of DNA or instead of RNA",
+  "The internal body temperature of the host species involved"],1],
+
+["Which statement is correct",
+ ["Every molecule is also a compound, since atoms are bonded",
+  "Every compound is a molecule, but not every molecule is a compound",
+  "Compound is the broader term, since it includes single elements",
+  "O2 counts as a compound because it contains two bonded atoms"],1],
+
+["Electrons are excluded from mass calculations because they weigh about",
+ ["1 amu, the same as a proton and the same as a neutron",
+  "2 amu, which is double the mass of a proton or neutron",
+  "1/2000 amu, which is negligible next to protons and neutrons",
+  "1/10 amu, which is small but still counted in the mass number"],2],
+
+["Neon (10Ne) is chemically unreactive because",
+ ["It carries no electrons at all in its outermost shell",
+  "Its outer shell is already full with eight electrons",
+  "It holds too many protons for other atoms to approach",
+  "It behaves as a metal, and metals resist forming bonds"],1],
+
+["Ice floats because",
+ ["Solid water is warmer than liquid water at the same moment",
+  "Hydrogen bonds hold molecules farther apart in a solid lattice",
+  "Freezing traps small pockets of air throughout the solid",
+  "Freezing breaks most of the hydrogen bonds between molecules"],1],
+
+["When table salt dissolves in water it dissociates, but when sugar",
+ ["Sugar is not actually soluble in water, it only appears to be",
+  "Salt is ionic and separates into ions; sugar is covalent and stays whole",
+  "Sugar is nonpolar, so water cannot interact with it at all",
+  "Salt is held together by covalent bonds that water can break"],1],
+
+["Which linkage description matches glycogen",
+ ["Beta 1-4 linkages forming straight unbranched fibers",
+  "Alpha 1-4 linkages only, producing a coiled helical fiber",
+  "Alpha 1-4 and 1-6 linkages, producing extensive branching",
+  "Beta 1-6 linkages that coil the chain tightly on itself"],2],
+
+["Starch and cellulose are both pure glucose polymers. The difference is",
+ ["Cellulose contains added nitrogen while starch does not",
+  "The orientation of one hydroxyl, giving alpha vs beta glucose",
+  "Cellulose is assembled from fructose rather than from glucose",
+  "Starch is built with beta linkages and cellulose with alpha"],1],
+
+["Amino acids are categorized by their R groups into",
+ ["Large, medium, and small, based on the size of the side chain",
+  "Nonpolar, polar, and electrically charged side chain groups",
+  "Acidic and neutral only, since no amino acid is ever basic",
+  "Saturated and unsaturated, based on double bonds in the chain"],1],
+
+["Which interactions maintain TERTIARY structure",
+ ["Peptide bonds linking each amino acid to the next in sequence",
+  "Hydrogen bonds between atoms of the polypeptide backbone only",
+  "R group interactions: hydrogen, hydrophobic, ionic, disulfide",
+  "Glycosidic linkages joining the subunits of the folded chain"],2],
+
+["Which is NOT a cause of denaturation listed in lecture",
+ ["A change in the pH of the surrounding solution",
+  "An increase in temperature above the normal range",
+  "A change in the salinity of the surrounding fluid",
+  "Dehydration synthesis joining two monomers together"],3],
+
+["Internal membranes in eukaryotic cells serve to",
+ ["Add mass to the cell so that it settles within the tissue",
+  "Compartmentalize the cell and increase surface area for metabolism",
+  "Serve as a replacement if the plasma membrane is damaged",
+  "Store the cell's genetic information outside of the nucleus"],1],
+
+["You see a cell with a cell wall, a central vacuole and chloroplasts",
+ ["A human cheek cell, scraped from the inside of the mouth",
+  "Frog blood, which unlike human blood still has a nucleus",
+  "Elodea, a plant cell with a wall and green chloroplasts",
+  "A bacterium, which has a wall but no internal organelles"],2],
+
+["The nucleolus is responsible for",
+ ["Storing lipids until the cell requires them for energy",
+  "Synthesizing the ribosomal subunits inside the nucleus",
+  "Digesting waste material and worn-out cellular components",
+  "Producing ATP from the breakdown of glucose and oxygen"],1],
+
+["Smooth ER differs from rough ER because smooth ER",
+ ["Has no ribosomes and handles lipid synthesis and detoxification",
+  "Carries many more ribosomes on its surface than rough ER does",
+  "Produces only the proteins that will be secreted from the cell",
+  "Contains its own DNA, separate from the DNA in the nucleus"],0],
+
+["Which is evidence for endosymbiosis",
+ ["Mitochondria are found in every known type of living cell",
+  "Mitochondria have their own DNA, own ribosomes, double membrane",
+  "Chloroplasts appear green because of the pigment they contain",
+  "Mitochondria are assembled by the Golgi apparatus as needed"],1],
+
+["The endomembrane system is thought to have originated from",
+ ["Bacteria that were engulfed and then kept by a host cell",
+  "Infolding of the plasma membrane into the cell interior",
+  "A viral infection that left membrane behind in the cytoplasm",
+  "Microtubules of the cytoskeleton flattening into sheets"],1],
+
+["Which statement about the scientific process is most accurate",
+ ["It always runs in one fixed order and ends with a final conclusion",
+  "It loops, and results often send you back to revise hypothesis or method",
+  "Observation always comes first, before any hypothesis can be formed",
+  "Peer review happens only once, at the very end of the whole process"],1]
+];
+
+REBALANCE.forEach(([sub, opts, a]) => {
+  const q = QUIZ.find(x => x.type === "mc" && x.q.indexOf(sub) !== -1);
+  if(q){ q.opts = opts; q.a = a; }
+});
+
+/* the biology definition card had no question of its own */
+QUIZ.push({deck:"science", type:"mc", cardDeck:"science", cardSub:"What is biology?",
+ q:"Which is his definition of biology?",
+ opts:["The scientific study of life",
+       "The study of animals and how they behave",
+       "The laboratory study of chemical reactions",
+       "The classification of organisms into groups"],
+ a:0,
+ why:"Four words on his slide: the scientific study of life. Do not overbuild it. The word scientific matters, because it says biology uses the methods of science."});
+/* ---------- the practice exam itself, plus worksheet questions ---------- */
+const TUTOR_Q = [
+/* === Practice exam, section one === */
+["tutor","three characteristics that life and viruses SHARE","mc","All the organisms on your campus makes up:",
+ ["An ecosystem, since it includes the physical environment too",
+  "A community, meaning all the populations living in one area",
+  "A population, meaning members of a single species together",
+  "A taxonomic domain, one of the three broadest groupings"],1,
+ "A population is one species. A community is all the species in an area. An ecosystem adds the nonliving environment. 'All the organisms' means every species, so community."],
+
+["tutor","three characteristics that life and viruses SHARE","mc","Which best distinguishes hypotheses from theories in science?",
+ ["Theories are simply hypotheses that have now been proved true",
+  "Hypotheses are guesses while theories are the correct answers",
+  "Hypotheses are relatively narrow, theories have broad explanatory power",
+  "Theories are proved true while hypotheses are usually contradicted"],2,
+ "Scope is the difference, not proof. Science never proves anything absolutely, so any option containing the word 'proved' is wrong on principle."],
+
+["tutor","Functional groups by their properties","mc","Which of the following is hydrophobic?",
+ ["Paper, which is made largely of cellulose fibers",
+  "Wax, which is a nonpolar lipid made of long chains",
+  "Table salt, which is an ionic compound of Na and Cl",
+  "Sugar, which carries many hydroxyl groups on its rings"],1,
+ "Nonpolar means hydrophobic. Wax is lipid. Salt is ionic, and sugar and cellulose are loaded with polar hydroxyl groups, so all three interact with water."],
+
+["tutor","read nuclide notation","mc","The pH of a lake is 4.0. What is the hydrogen ion concentration?",
+ ["4.0 M, reading the pH value directly as a concentration",
+  "10^-10 M, which would be the hydroxide concentration here",
+  "10^-4 M, taking the negative of the pH as the exponent",
+  "10^4 M, using the pH value as a positive exponent"],2,
+ "pH = -log[H+], so [H+] = 10^-pH. Flip the sign of the pH and that is your exponent."],
+
+["tutor","read nuclide notation","mc","What is the hydroxide concentration of that same lake at pH 4?",
+ ["10^-10 M, since the two exponents must add to -14",
+  "10^-4 M, which is the hydrogen ion concentration instead",
+  "10^-7 M, which would only be true in neutral pure water",
+  "10.0 M, which is not possible in an aqueous solution"],0,
+ "[H+][OH-] = 10^-14 always. If [H+] is 10^-4, then [OH-] must be 10^-10, because -4 and -10 sum to -14."],
+
+["tutor","Amylase can only break alpha glucose","mc","Amylase breaks only alpha glucose linkages. Which could it break apart?",
+ ["Glycogen, starch, and amylopectin, which are all alpha linked",
+  "Glycogen and cellulose, one storage and one structural form",
+  "Cellulose and chitin, the two structural polysaccharides",
+  "Starch, chitin, and cellulose, a mix of both linkage types"],0,
+ "Amylopectin is just the branched portion of starch, so it is alpha too. Cellulose and chitin are beta linked, which is exactly why humans cannot digest them."],
+
+["tutor","Polypeptide vs protein","mc","Which structural level of a protein is LEAST affected by disruption of hydrogen bonds?",
+ ["Primary structure, which is held together by peptide bonds",
+  "Secondary structure, the alpha helices and beta pleated sheets",
+  "Tertiary structure, the overall folded shape of the chain",
+  "Quaternary structure, the assembly of multiple subunits"],0,
+ "Peptide bonds are covalent and far stronger than hydrogen bonds, so the sequence survives. Secondary structure is the most vulnerable, since it is held by backbone hydrogen bonds."],
+
+/* === Practice exam, section two === */
+["tutor","three characteristics that life and viruses SHARE","mc","Which of the following always relates to function?",
+ ["Structure, the shape and arrangement of the thing itself",
+  "Behavior, meaning how an organism acts in its environment",
+  "Color, which often signals something about the organism",
+  "Age, since older organisms function differently than young"],0,
+ "One of his six course themes, stated almost word for word: structure relates to function at every level of biological organization."],
+
+["tutor","flow of genetic information","mc","What carries all of the information on how an organism is meant to function?",
+ ["The cell, which contains everything the organism needs",
+  "The DNA, which stores the complete heritable instructions",
+  "The RNA, which carries messages out to the ribosomes",
+  "A protein, which performs nearly every job in the body"],1,
+ "DNA is the master copy. RNA carries a working copy of part of it, and proteins are the product, not the storage."],
+
+["tutor","What is entropy","mc","Energy trends from higher to lower organization. What is this called?",
+ ["Chaos, the general breakdown of order in a system",
+  "Entropy, the measure of disorder that tends to increase",
+  "Energy transfer, the movement of energy between objects",
+  "Endemism, a species being restricted to one location"],1,
+ "Entropy. It is on his vocabulary list, and it is why energy must flow continuously through an ecosystem rather than cycling like matter."],
+
+["tutor","Null hypothesis vs alternate","mc","Which best describes a hypothesis?",
+ ["A highly tested explanation supported by lots of evidence",
+  "An explanation that has not been and cannot be tested yet",
+  "An attempt to explain a phenomenon that can be tested",
+  "A tested statement that reliably predicts future phenomena"],2,
+ "Testability is the defining feature. The first option describes a theory, and the last describes a law."],
+
+["tutor","read nuclide notation","mc","What is the outside layer of a virion with a viral envelope made of?",
+ ["Phospholipid bilayer that the virus synthesized itself",
+  "Protein capsomeres arranged into a repeating shell",
+  "Glycoproteins forming a continuous outer coating",
+  "Phospholipid bilayer taken from the host cell membrane"],3,
+ "Stolen, not made. The envelope is host membrane picked up as the virus buds out, which is why soap destroys enveloped viruses."],
+
+["tutor","Functional groups by their properties","mc","Which of the following is NOT a main element in organic molecules?",
+ ["Carbon, which forms the backbone of every organic molecule",
+  "Sulfur, which appears only in a few specific side chains",
+  "Oxygen, which is the most abundant element in the body",
+  "Nitrogen, found in every amino acid and every base"],1,
+ "CHON are the main four. Sulfur shows up in cysteine and methionine but is a trace element, not a main one."],
+
+["tutor","read nuclide notation","mc","Electron shells represent:",
+ ["A quantized state where an electron is likely to exist",
+  "A protective covering that surrounds and shields electrons",
+  "A part of the atom shielding the nucleus from electrons",
+  "A drawing convention for configurations that are not real"],0,
+ "Shells are energy levels, not physical shields. The Bohr model draws them as neat circles, but they represent probable energy states."],
+
+["tutor","Prokaryote vs eukaryote: the Venn","mc","What gives water its emergent properties?",
+ ["Polarity, the uneven distribution of charge in the molecule",
+  "Ionic bonds formed between neighboring water molecules",
+  "Covalent bonds holding each water molecule together",
+  "Hydrogen bonds formed between separate water molecules"],3,
+ "Careful here, because two options are defensible. Polarity is the root cause, but hydrogen bonds are what polarity produces and what directly creates cohesion, high heat capacity, ice floating, and solvent behavior. The chain is: polar covalent bonds, then partial charges, then hydrogen bonds, then the four properties. If the exam offers both, hydrogen bonds is the more direct answer, but be ready to explain the whole chain."],
+
+/* === worksheet questions === */
+["tutor","Isotope, ion, different element","mc","An isotope has:",
+ ["A varying number of protons compared to the standard atom",
+  "A varying number of neutrons compared to the standard atom",
+  "A varying number of electrons compared to the neutral atom",
+  "No difference at all from any other atom of that element"],1,
+ "Neutrons for isotopes. Change protons and you have a different element; change electrons and you have an ion."],
+
+["tutor","Isotope, ion, different element","mc","An ion has:",
+ ["A varying number of protons compared to the neutral atom",
+  "A varying number of neutrons compared to the neutral atom",
+  "A varying number of electrons compared to the neutral atom",
+  "No difference at all from the neutral atom of that element"],2,
+ "Electrons for ions. Gaining them gives a negative charge, losing them gives a positive one, and the element itself does not change."],
+
+["tutor","Isotope, ion, different element","mc","Different elements have:",
+ ["A varying number of protons, which defines elemental identity",
+  "A varying number of neutrons, which only changes the mass",
+  "A varying number of electrons, which only changes the charge",
+  "No difference at all beyond the name we give to each one"],0,
+ "Protons are the identity. Change that number and it is a different substance entirely."],
+
+["tutor","Prokaryote vs eukaryote: the Venn","mc","Prokaryotic cells are more ______ than eukaryotic cells.",
+ ["Complex, since they carry out more varied metabolic work",
+  "Simple, since they lack a nucleus and membrane organelles",
+  "Rare, since they are outnumbered by eukaryotic organisms",
+  "Popular, since they are studied more often in laboratories"],1,
+ "Structurally simpler, though metabolically they are actually more diverse than eukaryotes. Simple refers to the architecture."],
+
+["tutor","Prokaryote vs eukaryote: the Venn","mc","True or false: prokaryotic cells don't need to be small.",
+ ["True, size makes no difference to how a prokaryote functions",
+  "False, they rely on diffusion so surface area to volume limits size",
+  "True, many prokaryotes are larger than typical eukaryotic cells",
+  "False, but only because their cell walls cannot support more mass"],1,
+ "False. Without internal membranes they depend on diffusion, and as volume grows faster than surface area, the interior can no longer be supplied."],
+
+["tutor","Prokaryote vs eukaryote: the Venn","mc","The DNA in prokaryotes lacks:",
+ ["Guanine, one of the four nitrogenous bases in the genome",
+  "Histones, the proteins eukaryotic DNA is packaged around",
+  "RNA, which prokaryotes produce in the same way we do",
+  "Uracil, which is not found in the DNA of any organism"],1,
+ "Histones. Prokaryotic DNA is not wound around histone proteins the way eukaryotic chromatin is. Guanine is in all DNA, and uracil is in no DNA."],
+
+["tutor","Polypeptide vs protein","mc","What is the difference between a polypeptide chain and a protein?",
+ ["Polypeptides are built from monosaccharides rather than amino acids",
+  "Polypeptides are already folded into a functional conformation",
+  "Polypeptides are unfolded chains; a protein is the folded form",
+  "They are the same thing, and the words are interchangeable"],2,
+ "The chain is a polypeptide. Once it folds into its working three-dimensional shape, it is a protein."],
+
+["tutor","Polypeptide vs protein","mc","What does denaturation entail?",
+ ["The breaking of the peptide bonds that link the amino acids",
+  "The unfolding of a protein while its sequence stays intact",
+  "A protein being converted back into the DNA that encoded it",
+  "DNA being converted directly into a functional protein"],1,
+ "Unfolding, not breaking. Peptide bonds are covalent and survive, so primary structure is retained, which is why the sequence is still there afterward."],
+
+["tutor","Functional groups by their properties","mc","Phosphate groups have how many oxygens and what charge?",
+ ["Two oxygens and a positive charge on the central atom",
+  "Four oxygens and a negative charge on the whole group",
+  "Three oxygens and no net charge in aqueous solution",
+  "Four oxygens and a positive charge that attracts water"],1,
+ "Four oxygens, negative charge. That negative charge is what makes the phospholipid head polar and what drives ATP energy transfer."],
+
+["tutor","Functional groups by their properties","mc","Which functional group forms covalent crosslinks in proteins?",
+ ["Hydroxyl, which is polar and forms hydrogen bonds instead",
+  "Sulfhydryl, which forms disulfide bridges between residues",
+  "Carboxyl, which donates hydrogen ions and turns negative",
+  "Methyl, which is nonpolar and does not react with much"],1,
+ "Sulfhydryl (-SH) on cysteine. Two of them form a disulfide bridge, which is a covalent bond and the strongest thing holding tertiary structure together."],
+
+/* === short answers straight off the worksheets === */
+["tutor","Null hypothesis vs alternate","sa","You are growing sunflowers and want the ideal soil pH. Write the null and alternate hypothesis, then set up the experiment.",
+ null,null,null,
+ "Null hypothesis: soil pH has no effect on the height of sunflower plants. Alternate hypothesis: soil pH does affect the height of sunflower plants. Prediction: if soil pH affects growth, then sunflowers grown in soil near pH 6.6 to 6.8 will reach a greater average height than those grown in more acidic or more basic soil. Independent variable: the pH of the soil, set at several levels across the range. Dependent variable: average plant height in centimeters. Controlled variables: the same sunflower variety, the same amount of water, the same light exposure, the same soil type, the same pot size, the same temperature, and the same growing period. Control group: plants grown in untreated neutral soil, so the treated groups have a baseline to be compared against. I would use many plants in each pH group rather than one, assign them randomly, repeat the whole experiment, and decide in advance to compare mean heights between groups."],
+
+["tutor","Turning data into a law","sa","From repeated sunflower data, state a scientific law and then a scientific theory, and explain how they differ.",
+ null,null,null,
+ "Law: sunflower growth is greatest in soil with a pH near 6.6 to 6.8, and average height decreases as soil pH moves either above or below that range. That statement only describes what consistently happens; it makes no claim about why. Theory: soil pH affects the activity of the enzymes that sunflowers depend on for growth, so plants grow tallest where the pH keeps those enzymes closest to their optimal shape and activity, and growth declines where pH moves away from that optimum and enzyme function drops. The difference is that a law describes a consistent pattern while a theory explains the mechanism behind it. You do not need one to form the other, since a law can be stated from data alone and a theory can be developed from mechanism, and a hypothesis never becomes a law. Neither is set in stone. Both remain open to revision if new evidence contradicts them."],
+
+["tutor","Amylase can only break alpha glucose","sa","What is the specific monomer and specific function of cellulose, and of protein?",
+ null,null,null,
+ "Cellulose: the specific monomer is beta glucose, and the specific function is structural support in the plant cell wall, where straight beta-linked chains hydrogen bond to one another into rigid fibers. Saying the monomer is a monosaccharide is the general answer; beta glucose is the specific one the question is asking for. Protein: the specific monomer is the amino acid, and proteins serve many specific functions including catalyzing reactions as enzymes, providing structure as in collagen and keratin, transporting substances as hemoglobin does, enabling movement through actin and myosin, and defending the body as antibodies. Amino acids are joined by peptide bonds into polypeptides, which fold into functional proteins."],
+
+["tutor","Label the blood glucose regulation","sa","Explain how blood glucose is regulated, naming the organs, hormones and storage molecule.",
+ null,null,null,
+ "After a meal, blood glucose rises above the normal range. The pancreas detects this and secretes insulin. Insulin signals body cells to take up glucose and signals the liver to convert glucose into glycogen for storage, which lowers blood glucose back toward normal. Later, during fasting or exercise, blood glucose falls below the normal range. The pancreas detects this and secretes glucagon. Glucagon signals the liver to break stored glycogen back down into glucose and release it into the bloodstream, which raises blood glucose back toward normal. Because each response reverses the change that triggered it, this is negative feedback, and it is a clear example of homeostasis. The pancreas is the sensor and signal source, the liver is the storage site, and glycogen is the storage form of glucose."]
+];
+
+TUTOR_Q.forEach(row => {
+  const [dId, csub, type, q, opts, a, why, model] = row;
+  const item = {deck:dId, type, q, cardDeck:dId, cardSub:csub};
+  if(type === "mc"){ item.opts = opts; item.a = a; item.why = why; }
+  else { item.model = model; }
+  QUIZ.push(item);
+});
+
+/* three tutoring cards still needed a question of their own */
+QUIZ.push(
+{deck:"tutor", type:"mc", cardDeck:"tutor", cardSub:"components of experimental design",
+ q:"Which is a controlled variable rather than the control group?",
+ opts:["The group of sunflowers grown in untreated neutral soil",
+       "Giving every plant the same amount of water each day",
+       "The pH level that you deliberately change between groups",
+       "The final height of each plant measured in centimeters"],
+ a:1,
+ why:"A controlled variable is a condition held identical everywhere. The control group is the group with no treatment. Both words appear on the worksheet and they are not the same thing."},
+{deck:"tutor", type:"sa", cardDeck:"tutor", cardSub:"write a complementary DNA strand",
+ q:"Write the complementary strand to 5'-AGGTCCG-3', and explain the two steps.",
+ model:"The complementary strand is 3'-TCCAGGC-5', which written conventionally in the 5' to 3' direction reads 5'-CGGACCT-3'. Two steps produce it. First, apply complementary base pairing to each position: adenine pairs with thymine, thymine with adenine, guanine with cytosine, and cytosine with guanine, which turns A G G T C C G into T C C A G G C. Second, reverse the directionality, because the two strands of DNA run antiparallel: if the given strand runs 5' to 3', its partner runs 3' to 5'. Leaving off the direction labels is the most common way to lose credit on this question, because antiparallel orientation is part of what is being tested."},
+{deck:"tutor", type:"mc", cardDeck:"tutor", cardSub:"Fill the macromolecule table",
+ q:"Which macromolecule class does NOT have a true monomer?",
+ opts:["Carbohydrates, which are built from monosaccharide units",
+       "Lipids, which are assembled from glycerol and fatty acids",
+       "Proteins, which are built from twenty different amino acids",
+       "Nucleic acids, which are built from nucleotide subunits"],
+ a:1,
+ why:"Lipids are grouped by a property, being hydrophobic, rather than by a shared repeating subunit. The table will tempt you to invent a monomer for that row."});
+/* auto-derived key terms for checking written answers */
+const ANSWER_KEYS = {"Explain the difference between a controlled variable and a c":["controlled","variable","soil","control","group","baseline"],"A friend says evolution is 'just a theory.' Explain why that":["theory","independent","hypothesis","evolution","selection"],"Give an example of emergence and an example of reductionism,":["emergence","cells","organ","cell","reductionism","molecule","organism"],"Describe one homeostatic feedback loop from start to finish.":["control","heat","surface","negative","feedback"],"Explain, step by step, how water's electronegativity differe":["electronegative","hydrogen","molecule","partial","negative","charge","positive","heat","vaporization","homeostasis"],"Name four functional groups and explain how each changes the":["hydroxyl","polar","molecule","carboxyl","hydrogen","ion","amino","fatty","acid","phosphate","negative","charge","backbone","sulfhydryl","disulfide","carbonyl","nonpolar","methyl"],"Explain the four levels of protein structure and what stabil":["primary","linear","sequence","amino","peptide","secondary","folding","alpha","beta","pleated","hydrogen","backbone","tertiary","polypeptide","hydrophobic","ionic","covalent","disulfide","quaternary","functional","protein","hemoglobin"],"Explain how the structure of DNA makes accurate inheritance ":["double","helix","backbone","adenine","thymine","guanine","cytosine","sequence","strand","template","complementary","base","molecule"],"Explain why a phospholipid bilayer forms spontaneously in wa":["phospholipid","amphipathic","phosphate","polar","hydrophilic","fatty","acid","nonpolar","hydrophobic","double","bilayer","cell"],"Are viruses alive? Build a full answer using the characteris":["acellular","cell","theory","metabolism","homeostasis","host","independent","genetic","selection","evolution"],"Walk through the replication cycle of an RNA virus and name ":["glycoprotein","spike","virus","receptor","protein","host","cell","surface","capsid","replication","amino","membrane","envelope"],"Design an experiment testing whether background music affect":["hypothesis","independent","variable","dependent","controlled","control","group","randomly","analysis"],"State the general rule linking linkage type, chain shape and":["alpha","glycosidic","branch","storage","enzymes","starch","glycogen","beta","hydrogen","bond","cellulose","chitin","fiber"],"Walk the characteristics of life and score a virus on each o":["cells","acellular","metabolism","homeostasis","host","cell","genetic","selection"],"A Mars rover returns objects that look like microbes. What e":["metabolism","generations","population","evolution","growth","positive","darwinian"],"Explain Patrick Forterre's virocell idea and evaluate it.":["virion","virocell","host","cell","virus","organism"],"A volume of water has a pH of 3. Give [H+] and [OH-], and sh":["negative","hydrogen","ion","concentration"],"Given CO2 + H2O in equilibrium with H2CO3 in equilibrium wit":["hydrogen","ion","concentration","right","side","equilibrium","left","bicarbonate","carbonic","acid","carbon","range","conjugate","base"],"Explain how a single amino acid change causes sickle cell an":["base","primary","hemoglobin","valine","glutamic","acid","hydrophilic","nonpolar","hydrophobic","folding","group","tertiary","protein","surface","cell","sickle","cells","chain","sequence"],"Trace a newly synthesized protein from synthesis to secretio":["mrna","nucleus","reticulum","protein","vesicle","golgi","membrane","cell","exocytosis","lysosome","enzyme"],"You are growing sunflowers and want the ideal soil pH. Write":["null","hypothesis","soil","height","sunflower","alternate","prediction","growth","independent","variable","range","dependent","centimeters","controlled","control","group","baseline","randomly"],"From repeated sunflower data, state a scientific law and the":["law","sunflower","growth","soil","height","range","theory","enzymes","optimal","enzyme","hypothesis"],"What is the specific monomer and specific function of cellul":["cellulose","monomer","beta","glucose","structural","cell","wall","hydrogen","bond","monosaccharide","protein","amino","acid","enzymes","hemoglobin","peptide","functional"],"Explain how blood glucose is regulated, naming the organs, h":["glucose","range","pancreas","insulin","cells","liver","glycogen","storage","glucagon","negative","feedback","homeostasis"],"Write the complementary strand to 5'-AGGTCCG-3', and explain":["complementary","strand","base","adenine","thymine","guanine","cytosine","antiparallel"]};
+
+const ANSWER_TRAPS = [
+  [/\bprove[ds]?\b|\bproven\b/i, "Science does not prove things. Say supported, or say the evidence is consistent with it."],
+  [/theory\s+(becomes|turns into|is promoted)/i, "A theory never becomes a law. They answer different kinds of questions."],
+  [/hypothesis\s+(becomes|turns into|grows into)/i, "A hypothesis does not grow up into a theory or a law."],
+  [/(organism|individual|animal|it)s?\s+(evolve|adapt)(s|ed)?\s+(during|in)\s+(its|their)\s+lifetime/i, "Individuals do not evolve. Populations change across generations."],
+  [/(needs?|wanted?|decided?|tries|chose)\s+to\s+(evolve|adapt|survive)/i, "Careful, that sounds like the organism chose. Selection acts on variation that already existed."],
+  [/polypeptides? (are|is) folded/i, "A polypeptide is the unfolded chain. The folded form is the protein."],
+  [/denaturation.{0,30}(break|breaking).{0,20}peptide/i, "Denaturation does not break peptide bonds. The sequence survives; only the folding is lost."],
+  [/secondary structure.{0,40}r ?group/i, "Secondary structure uses backbone hydrogen bonds. R groups drive tertiary structure."],
+  [/virus(es)? (is|are) alive because .{0,30}reproduc/i, "A virus only reproduces inside a host, so that alone does not settle it."],
+  [/cellulose.{0,30}(alpha|α)/i, "Cellulose uses beta linkages. Alpha is starch and glycogen."],
+  [/(starch|glycogen).{0,30}(beta|β)/i, "Starch and glycogen use alpha linkages. Beta is cellulose and chitin."],
+  [/ph .{0,20}(increase|rise|goes up).{0,30}(h\+|hydrogen ion).{0,20}increase/i, "If pH goes up, hydrogen ion concentration goes DOWN."],
+  [/uracil.{0,20}dna|dna.{0,20}uracil/i, "Uracil is RNA only. DNA uses thymine."],
+  [/thymine.{0,20}rna|rna.{0,20}thymine/i, "Thymine is DNA only. RNA uses uracil."]
+];
+/* ============================================================
+   APPLE PENCIL SUPPORT
+   Two separate things:
+   1. Scribble-ready text boxes. On iPadOS, writing into a real
+      textarea with the Pencil is converted to text by the system,
+      so we can actually read and check what she wrote.
+   2. A pressure-sensitive drawing canvas for diagrams, where
+      nothing can be auto-graded, so she draws then compares.
+   ============================================================ */
+
+/* ---------- the checker ---------- */
+function normalizeAnswer(t){
+  return " " + t.toLowerCase().replace(/[^a-z0-9\s+-]/g, " ").replace(/\s+/g, " ") + " ";
+}
+function checkWritten(text, keys){
+  const norm = normalizeAnswer(text);
+  const hit = [], miss = [];
+  (keys || []).forEach(k => {
+    const stem = k.length > 6 ? k.slice(0, k.length - 1) : k;
+    if(norm.indexOf(" " + stem) !== -1) hit.push(k); else miss.push(k);
+  });
+  const traps = [];
+  ANSWER_TRAPS.forEach(([re, note]) => { if(re.test(text)) traps.push(note); });
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return {hit, miss, traps, words};
+}
+function keysFor(q){
+  const k = Object.keys(ANSWER_KEYS).find(x => q.q.indexOf(x) === 0);
+  return k ? ANSWER_KEYS[k] : null;
+}
+function runCheck(){
+  const ta = document.getElementById("sa");
+  const q = quizList[quizIndex];
+  if(!ta || !q) return;
+  const text = ta.value.trim();
+  const box = document.getElementById("checkOut");
+  if(text.length < 12){
+    box.innerHTML = `<div class="verdict no"><b>Nothing to check yet.</b>Write or Scribble at least a sentence, then tap Check again.</div>`;
+    return;
+  }
+  const keys = keysFor(q);
+  const r = checkWritten(text, keys);
+  let html = "";
+  if(r.traps.length){
+    html += `<div class="verdict no"><b>Watch these ${r.traps.length === 1 ? "phrase" : "phrases"}</b>` +
+      r.traps.map(t => `<div style="margin-top:6px">${t}</div>`).join("") + `</div>`;
+  }
+  if(keys){
+    const pct = Math.round(r.hit.length / keys.length * 100);
+    html += `<div class="verdict ${pct >= 60 ? "ok" : "no"}">
+      <b>${pct >= 80 ? "That covers it 🍓" : pct >= 60 ? "Most of it is there" : "Some pieces are missing"}</b>
+      You used ${r.hit.length} of ${keys.length} key ideas in ${r.words} words.</div>`;
+    if(r.hit.length){
+      html += `<div class="chips"><span class="ct">YOU INCLUDED</span>` +
+        r.hit.map(k => `<span class="chip-hit">${k}</span>`).join("") + `</div>`;
+    }
+    if(r.miss.length){
+      html += `<div class="chips"><span class="ct">NOT MENTIONED &mdash; CHECK WHETHER THESE BELONG</span>` +
+        r.miss.map(k => `<span class="chip-miss">${k}</span>`).join("") + `</div>`;
+    }
+    html += `<p class="checknote">This checks for key terms and common wrong phrases. It cannot judge whether your reasoning is right, so read the full-credit answer below and compare.</p>`;
+  } else {
+    html += `<div class="verdict ${r.traps.length ? "no" : "ok"}"><b>${r.words} words written.</b>No common wrong phrases found. Compare against the full-credit answer below.</div>`;
+  }
+  box.innerHTML = html;
+  if(!quizAnswered) revealSA();
+}
+
+/* ---------- the drawing canvas ---------- */
+let padCtx = null, padDrawing = false, padHistory = [];
+function initPad(id){
+  const c = document.getElementById(id);
+  if(!c) return;
+  const rect = c.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  c.width = rect.width * dpr;
+  c.height = rect.height * dpr;
+  const ctx = c.getContext && c.getContext("2d");
+  if(!ctx) return;              /* no canvas support, leave the page working */
+  ctx.scale(dpr, dpr);
+  ctx.lineCap = "round"; ctx.lineJoin = "round";
+  ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue("--text-dark").trim() || "#3D2030";
+  padCtx = ctx; padHistory = [];
+  let last = null;
+
+  const pos = e => {
+    const r = c.getBoundingClientRect();
+    return {x: e.clientX - r.left, y: e.clientY - r.top,
+            p: (e.pointerType === "pen" && e.pressure) ? e.pressure : 0.5};
+  };
+  c.onpointerdown = e => {
+    /* ignore the palm: if a pen is in use, fingers are ignored */
+    if(padHistory.penUsed && e.pointerType === "touch") return;
+    if(e.pointerType === "pen") padHistory.penUsed = true;
+    c.setPointerCapture(e.pointerId);
+    padDrawing = true; last = pos(e);
+    padHistory.push(ctx.getImageData(0, 0, c.width, c.height));
+    if(padHistory.length > 12) padHistory.shift();
+  };
+  c.onpointermove = e => {
+    if(!padDrawing) return;
+    e.preventDefault();
+    const n = pos(e);
+    ctx.lineWidth = 1 + n.p * 3.2;
+    ctx.beginPath(); ctx.moveTo(last.x, last.y); ctx.lineTo(n.x, n.y); ctx.stroke();
+    last = n;
+  };
+  c.onpointerup = c.onpointercancel = () => { padDrawing = false; };
+  c.style.touchAction = "none";
+}
+function padUndo(id){
+  const c = document.getElementById(id);
+  if(!c || !padHistory.length || !c.getContext) return;
+  c.getContext("2d").putImageData(padHistory.pop(), 0, 0);
+}
+function padClear(id){
+  const c = document.getElementById(id);
+  if(!c || !c.getContext) return;
+  c.getContext("2d").clearRect(0, 0, c.width, c.height);
+  padHistory = [];
+}
+function toggleReveal(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle("shown");
+}
+
+/* ---------- notes saved per card ---------- */
+function noteKey(dId, idx){ return "note:" + dId + ":" + idx; }
+function getNote(dId, idx){ return store.get(noteKey(dId, idx), ""); }
+function saveNote(dId, idx){
+  const ta = document.getElementById("cardnote");
+  if(ta) store.set(noteKey(dId, idx), ta.value);
+}
 /* ---------- section covers ---------- */
 const COVERS = {
   science: {em:"🗂️", blurb:"The six ideas the course is built on, plus how science is actually done.",
@@ -3382,6 +4435,8 @@ const COVERS = {
     bullets:["Atoms, isotopes, ions, valence electrons","Ionic, covalent and hydrogen bonds","Water's four properties","pH math and the bicarbonate buffer"]},
   macro:   {em:"🍱", blurb:"Carbon, functional groups, and the four classes of biological molecules.",
     bullets:["Dehydration synthesis and hydrolysis","Alpha vs beta glucose","Protein structure and sickle cell","Nucleic acids and the double helix"]},
+  tutor:   {em:"📝", blurb:"From the ETC tutoring worksheets and the Unit One practice exam. This is the closest thing to seeing the real exam.",
+    bullets:["Every practice exam question, with reasoning","Entropy, null vs alternate hypothesis, histones","Nuclide notation and complementary strands","Blood glucose regulation and the functional group table"]},
   cells:   {em:"🔬", blurb:"Chapter 4 plus Lab 4. Not in the reading guide, but it is in his lectures.",
     bullets:["Cell theory and who said what","Prokaryote vs eukaryote","Organelles and the endomembrane system","Endosymbiosis and the lab specimens"]}
 };
@@ -3694,7 +4749,7 @@ function renderRead(){
     <article class="card">
       <div class="cardtop">
         <span class="em">${c.icon}</span>
-        <span class="src ${c.src === "guide" ? "guide" : "lec"}">${c.src === "guide" ? "reading guide" : "in lecture"}</span>
+        <span class="src ${c.src === "guide" ? "guide" : c.src === "tutor" ? "tutor" : "lec"}">${c.src === "guide" ? "reading guide" : c.src === "tutor" ? "practice exam" : "in lecture"}</span>
       </div>
       <h3>${c.q}</h3>
       <div class="cardgrid ${(c.fig||c.fig2)?'has-fig':'solo'}">
@@ -3714,6 +4769,20 @@ function renderRead(){
         <button class="${mine==='got'?'sel-got':''}" onclick="setMark('${d.id}',${cardIndex},'got')">I've got this</button>
         <button class="${mine==='shaky'?'sel-shaky':''}" onclick="setMark('${d.id}',${cardIndex},'shaky')">Still shaky</button>
       </div>
+      <div class="writebox">
+        <span class="wt">WRITE IT OUT &mdash; PENCIL OR KEYBOARD</span>
+        <textarea id="cardnote" placeholder="Answer in your own words before you open anything below. Scribble with the Pencil works here." oninput="saveNote('${d.id}',${cardIndex})">${(getNote(d.id, cardIndex) || "").replace(/</g,"&lt;")}</textarea>
+      </div>
+      ${(c.fig ? `<div class="drawbox">
+        <span class="wt">DRAW IT FROM MEMORY</span>
+        <div class="padwrap"><canvas id="pad" class="pad"></canvas></div>
+        <div class="padbar">
+          <button onclick="padUndo('pad')">Undo</button>
+          <button onclick="padClear('pad')">Clear</button>
+          <button onclick="toggleReveal('reveal')">Show the diagram</button>
+        </div>
+        <div class="reveal" id="reveal">${figFor(c.fig)}</div>
+      </div>` : "")}
       ${deepHtml}
       ${relHtml}
       </div>
@@ -3781,18 +4850,26 @@ function stepFlip(n){ const cards = deck().cards; flipped = false; flipIndex = (
 
 /* ---------- QUIZ ---------- */
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+/* shuffle the answer choices too, so position never becomes a clue */
+function shuffleOptions(q){
+  if(q.type !== "mc" || !q.opts) return q;
+  const correct = q.opts[q.a];
+  const opts = shuffle(q.opts);
+  return Object.assign({}, q, {opts, a: opts.indexOf(correct)});
+}
 function startQuiz(list){
   quizPicked = true;
-  quizList = list || shuffle(QUIZ.filter(q => q.deck === deckId));
+  quizList = (list || shuffle(QUIZ.filter(q => q.deck === deckId))).map(shuffleOptions);
   quizIndex = 0; quizAnswered = false; quizMissed = []; quizRight = 0; render();
 }
+/* the diagram that goes with a question. Only ever shown AFTER she answers,
+   because the diagrams are labeled and would give the answer away. */
 function figForQuestion(q){
-  const d = DECKS.find(x => x.id === q.deck);
+  if(!q.cardSub) return "";
+  const d = DECKS.find(x => x.id === q.cardDeck);
   if(!d) return "";
-  const words = q.q.toLowerCase();
-  const hit = d.cards.find(c => c.fig && c.q.toLowerCase().split(/\W+/).filter(w=>w.length>5)
-    .some(w => words.includes(w)));
-  return hit ? figFor(hit.fig) : "";
+  const card = d.cards.find(c => c.q.indexOf(q.cardSub) !== -1);
+  return (card && card.fig) ? figFor(card.fig) : "";
 }
 
 function renderQuizPicker(){
@@ -3822,14 +4899,17 @@ function renderQuiz(){
   const pct = Math.round((quizIndex/quizList.length)*100);
   const body = q.type === "mc"
     ? `<div class="opts" id="opts">${q.opts.map((o,i)=>`<button onclick="answerMC(${i})">${o}</button>`).join("")}</div><div id="verdict"></div>`
-    : `<textarea id="sa" placeholder="Say it out loud, then type the short version."></textarea>
-       <div style="margin-top:12px"><button class="btn" onclick="revealSA()">Show a full-credit answer</button></div><div id="verdict"></div>`;
+    : `<textarea id="sa" placeholder="Write or Scribble your answer here, then tap Check my answer."></textarea>
+       <div class="sarow">
+         <button class="btn" onclick="runCheck()">Check my answer</button>
+         <button class="btn ghost" onclick="revealSA()">Just show me the answer</button>
+       </div>
+       <div id="checkOut"></div><div id="verdict"></div>`;
   return `
     <div class="prog"><i style="width:${pct}%"></i></div>
     <div class="card">
       <p class="q-meta">Question ${quizIndex+1} of ${quizList.length} · ${q.type==="mc"?"Multiple choice":"Short answer"}</p>
       <p class="q-text">${q.q}</p>
-      ${figForQuestion(q)}
       ${body}
     </div>
     <div class="nav">
@@ -3846,13 +4926,14 @@ function answerMC(i){
   const ok = i === q.a;
   if(ok) quizRight++; else { quizMissed.push(q); rememberMissed(q); }
   document.getElementById("verdict").innerHTML =
-    `<div class="verdict ${ok?'ok':'no'}"><b>${ok?'Correct 🍓':'Not this time.'}</b>${q.why}</div>`;
+    `<div class="verdict ${ok?'ok':'no'}"><b>${ok?'Correct 🍓':'Not this time.'}</b>${q.why}</div>`
+    + figForQuestion(q);
   document.getElementById("nextBtn").disabled = false;
 }
 function revealSA(){
   if(quizAnswered) return; quizAnswered = true;
   const q = quizList[quizIndex];
-  document.getElementById("verdict").innerHTML = `
+  document.getElementById("verdict").innerHTML = figForQuestion(q) + `
     <div class="model"><b>WHAT A FULL-CREDIT ANSWER SOUNDS LIKE</b>${q.model}</div>
     <div class="selfmark">
       <button onclick="markSA(true)">I covered that</button>
@@ -4010,6 +5091,8 @@ function renderSheet(){
 
 /* ---------- the last hour plan ---------- */
 const LIKELY_SA = [
+  "Write the null and alternate hypothesis",
+  "state a scientific law and then a scientific theory",
   "A Mars rover returns objects that look like microbes",
   "Given CO2 + H2O in equilibrium",
   "Trace a newly synthesized protein from synthesis to secretion",
@@ -4043,6 +5126,7 @@ function renderPlan(){
       <button class="btn" onclick="openSheet('chem')">Chemistry &amp; water diagrams</button>
       <button class="btn" onclick="openSheet('macro')">Macromolecule diagrams</button>
       <button class="btn" onclick="openSheet('cells')">Cell diagrams</button>
+      <button class="btn ghost" onclick="setDeck('tutor');setMode('quiz')">Or go straight to the practice exam</button>
     </div>
 
     <div class="plan-step">
@@ -4072,10 +5156,12 @@ function renderPlan(){
 
 /* ---------- render ---------- */
 function render(){
-  document.getElementById("view").innerHTML =
+  const _v = document.getElementById("view");
+  _v.innerHTML =
     mode==="read" ? renderRead() : mode==="flip" ? renderFlip() : mode==="weak" ? renderWeak()
     : mode==="plan" ? renderPlan() : mode==="sheet" ? renderSheet() : renderQuiz();
   attachSwipe();
+  if(document.getElementById("pad")) initPad("pad");
 }
 document.addEventListener("keydown", e => {
   if(mode==="flip"){ if(e.key==="ArrowRight") stepFlip(1); if(e.key==="ArrowLeft") stepFlip(-1); }
